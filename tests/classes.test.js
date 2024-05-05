@@ -1,4 +1,4 @@
-const {Circle, Square} = require('../lib/shapes')
+const { Circle, Square, Triangle } = require('../lib/shapes')
 
 describe('Shape Class Tests', () => {
     it('Should render a square element tag', () => {
