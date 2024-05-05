@@ -1,62 +1,8 @@
 // Import required modules
 const inquirer = require('inquirer'); // Import inquirer for command-line user input
 const fs = require('fs'); // Import fs for file system operations
+const { generateSVG, Circle, Triangle, Square } = require('./lib/shapes') // Import shapes and generateSVG function from shapes.js
 
-// Define Square class
-class Square {
-  constructor(text, textColor, width, height) {
-    this.text = text;
-    this.textColor = textColor;
-    this.width = width;
-    this.height = height;
-    this.shapeColor = ""; // Initialize shapeColor property
-  }
-
-  setColor(color) {
-    this.shapeColor = color; // Set shapeColor property
-  }
-
-  render() {
-    return `<rect width="${this.width}" height="${this.height}" fill="${this.shapeColor}"/>`; // Use shapeColor property
-  }
-}
-
-// Define Circle class
-class Circle {
-  constructor(text, textColor, radius) {
-    this.text = text;
-    this.textColor = textColor;
-    this.radius = radius;
-    this.shapeColor = ""; // Initialize shapeColor property
-  }
-
-  setColor(color) {
-    this.shapeColor = color; // Set shapeColor property
-  }
-
-  render() {
-    return `<circle cx="${this.radius}" cy="${this.radius}" r="${this.radius}" fill="${this.shapeColor}"/>`; // Use shapeColor property
-  }
-}
-
-// Define Triangle class
-class Triangle {
-  constructor(text, textColor, width, height) {
-    this.text = text;
-    this.textColor = textColor;
-    this.width = width;
-    this.height = height;
-    this.shapeColor = ""; // Initialize shapeColor property
-  }
-
-  setColor(color) {
-    this.shapeColor = color; // Set shapeColor property
-  }
-
-  render() {
-    return `<polygon points="0,${this.height} ${this.width},0 ${this.width},${this.height}" fill="${this.shapeColor}"/>`; // Use shapeColor property
-  }
-}
 
 // Function to prompt user for shape input
 async function getUserShape() {
@@ -87,32 +33,22 @@ async function getUserShape() {
   switch (shape) {
     case 'Circle':
       userShape = new Circle(text, textColor, 100); // Example radius value
-      userShape.setColor(shapeColor); // Set shape color
       break;
     case 'Square':
       userShape = new Square(text, textColor, 100, 100); // Example width and height values
-      userShape.setColor(shapeColor); // Set shape color
+      break;
+    case 'Triangle':
+      userShape = new Triangle(text, textColor, 100, 100); // Example width and height values
       break;
     default:
-      userShape = new Triangle(text, textColor, 100, 100); // Example width and height values
-      userShape.setColor(shapeColor); // Set shape color
+      console.error('Invalid shape selected');
+      return null;
   }
 
+  // userShape.setColor(shapeColor); // Set shape color
+  // console.log('Final shape object:', userShape)
+
   return userShape; // Return the created shape object
-}
-
-// Function to generate SVG code based on user-selected shape
-async function generateSVG(userShape) {
-  // Construct SVG code
-  const svgCode = `<svg version="1.1" width="300" height="200">
-    ${userShape.render()}
-    <text x="150" y="100" font-size="20" text-anchor="middle" fill="${userShape.textColor}">${userShape.text}</text>
-  </svg>`;
-
-  // Write SVG code to file
-  await fs.promises.writeFile('./logo.svg', svgCode);
-
-  console.log('SVG generated successfully!');
 }
 
 // Main function to initiate the process
