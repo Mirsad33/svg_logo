@@ -1,67 +1,72 @@
-// index.js
-
 const inquirer = require('inquirer');
 const fs = require('fs');
-const { generateSVG, Circle, Triangle, Square } = require('./shapes');
+const { generateSVG, Circle, Triangle, Square } = require('./lib/shapes');
 
-async function getUserShape() {
-    const { text, textColor, shape, shapeColor } = await inquirer.prompt([
-        {
-            name: 'text',
-            message: 'Please enter the text for your SVG'
-        },
-        {
-            name: 'textColor',
-            message: 'Please provide a color for your SVG text'
-        },
-        {
-            type: 'list',
-            message: 'Please enter the shape of your SVG',
-            name: 'shape',
-            choices: ['Circle', 'Square', 'Triangle']
-        },
-        {
-            name: 'shapeColor',
-            message: 'Please provide a shape color for your SVG'
-        }
-    ]);
+const questions = [
+  {
+    name: 'title',
+    message: 'Please type your title (Max 3 Characters):',
+    prefix: '\n',
+    validate: function(input) {
+      if (input.length < 3) {
+        return "Title must be at maxium 3 characters long.";
+      }
+      return true; 
+    }
+  },
 
-    let userShape;
+  {
+      name: 'textColor',
+      message: 'What color would you like your text to be?',
+      prefix: '\n'
+    },
 
-    switch (shape) {
-        case 'Circle':
-            userShape = new Circle(text, textColor, shapeColor);
-            break;
-        case 'Square':
-            userShape = new Square(text, textColor, shapeColor);
-            break;
-        case 'Triangle':
-            userShape = new Triangle(text, textColor, shapeColor);
-            break;
-        default:
-            console.error('Invalid shape selected');
-            return null;
+  {
+    type: 'list',
+    name: 'shape',
+    message: 'Please choose a shape:',
+    choices: ['Circle', 'Triangle', 'Square'],
+  },
+
+  {
+      name: 'shapeColor',
+      message: 'What color would you like your shape to be?',
+      prefix: '\n'
+  },
+
+];
+
+
+
+// TODO: Create a function to write README file
+function writeToFile(fileName, data) {
+  fs.writeFile(fileName, data, (err) => {
+    if (err) {
+      return console.log(err)
     }
 
-    userShape.setColor(shapeColor);
-    console.log('Final shape object:', userShape);
-
-    return userShape;
+    console.log('SVG generated successfully!')
+  })
 }
 
-async function main() {
-    try {
-        const userShape = await getUserShape();
-        if (userShape) {
-            const filename = 'output.svg'; // Define filename for the SVG output
-            userShape.writeSVGToFile(filename, userShape);
-        }
-    } catch (error) {
-        console.error('An error occurred:', error);
-    }
+// TODO: Create a function to initialize app
+function init() {
+
+  inquirer.prompt(questions)
+    .then((answersObj) => {
+      const markdown = generateSVG(answersObj)
+
+      writeToFile('logo.svg', markdown)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+
+
 }
 
-main();
+// Function call to initialize app
+init();
 
 
 
